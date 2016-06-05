@@ -45,6 +45,8 @@ import android.telephony.ServiceState;
 import android.text.SpannableStringBuilder;
 import android.text.format.DateUtils;
 import android.text.style.RelativeSizeSpan;
+import android.telephony.SubscriptionInfo;
+import android.telephony.SubscriptionManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
@@ -300,7 +302,7 @@ public class NotificationMgr {
                 resId = android.R.drawable.stat_notify_voicemail;
             }
            // TODO: modify above logic for isMultiSimEnabled below
-            if (PhoneUtils.isMultiSimEnabled()) {
+            if (showSimSlotIcon()) {
                 resId = mwiIcon[phoneId];
             }
 
@@ -424,6 +426,15 @@ public class NotificationMgr {
             mNotificationManager.cancelAsUser(
                     null /* tag */, notificationId, UserHandle.ALL);
         }
+    }
+
+    private boolean showSimSlotIcon() {
+        final List<SubscriptionInfo> subInfoList =
+                SubscriptionManager.from(mContext).getActiveSubscriptionInfoList();
+        if (subInfoList == null) {
+            return false;
+        }
+        return subInfoList.size() > 1;
     }
 
     /**
